@@ -1,6 +1,7 @@
 import base64
 from PIL import Image
 import sys
+import io
 # Read input
 
 boards_str = ""
@@ -17,27 +18,33 @@ X_LETTERS = ['A', 'B', 'C', 'D', 'E']
 boards = boards_str.split("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
 for board in boards:
     images = board.split("\n")
-    pil_images = []
-    for image in images:
+    for i, image in enumerate(images):
         if image:
             image_bytes = base64.b64decode(image)
-            i = Image.frombytes('RGB', (5, 5), image_bytes)
-            pil_images.append(i)
+            buf = io.BytesIO(image_bytes)
+            pi = Image.open(buf)
+            # pi = Image.frombytes('RGB', (5, 5), image_bytes)
+            pi.save('{0}.bmp'.format(str(i)))
 
     for x in range(0,5):
         for y in range(0,5):
+            # print('{0}{1}'.format(X_LETTERS[x], y + 1))
             redshift = True
             red_high = 0
-            for pi in pil_images:
-                r, g, b = pi.getpixel((x, y))
-                if r > red_high:
-                    red_high = r
-                else:
-                    redshift = False
-                    red_high = r # necessary?
+            for image in images:
+                if image:
+                    image_bytes = base64.b64decode(image)
+                    buf = io.BytesIO(image_bytes)
+                    pi = Image.open(buf)
+                    # pi = Image.frombytes('RGB', (5, 5), image_bytes)
+                    pi.save('{0}{1}.bmp'.format(X_LETTERS[x], y + 1))
+                    rgb = pi.convert('RGB')
+                    r, g, b = rgb.getpixel((x, y))
+                    # print('{0} {1} {2}'.format(r,g,b))
+                    # print('{0} {1}'.format(red_high, r))
+                    if r > red_high:
+                        red_high = r
+                    else:
+                        redshift = False
             if redshift:
-                print('{0}{1}'.format(X_LETTERS[x], y))
-
-
-
-
+                print('{0}{1}'.format(X_LETTERS[x], y + 1))
