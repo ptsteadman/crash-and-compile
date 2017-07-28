@@ -1,5 +1,6 @@
 import base64
 from PIL import Image
+import sys
 # Read input
 
 boards_str = ""
@@ -16,6 +17,7 @@ for board in boards:
     images = board.split("\n")
     for image in images:
         if image:
-            decoded_image = base64.b64decode(image)
-            print(decoded_image)
+            image_bytes = base64.b64decode(image)
+            i = Image.frombytes('RGB', (5, 5), image_bytes)
+            print(i)
 
