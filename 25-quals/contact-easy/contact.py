@@ -14,10 +14,9 @@ def contact():
 
     for line in stdin.readlines():
         line = line.strip()
-        if not '*' in line:
-            continue
         if all([c == '%' for c in line]):
-            break
+            message += '\n'
+            continue
         message += table[str(len(line))]
 
     stdout.write(message + '\n')
